@@ -1,3 +1,5 @@
+import { parseChunks } from "./src/parse-file.ts";
+
 const stylePrompt = `You are a helpful assistant that helps me write better.
 You will give me a score from 1 to 10 on how good the text is. You will also give me some suggestions on how to improve the text.
 
@@ -19,19 +21,7 @@ const filename =
   "/Users/stefan.wauters/coding/personal/blog/content/private/Writing - Private Notes.md";
 
 const fileContent = await Deno.readTextFile(filename);
-const fileContentLines = fileContent.split("\n");
-
-// Split the file content into chunks split by lines starting with a hashtag
-const chunks = [];
-let chunkStart = 0;
-for (let i = 0; i < fileContentLines.length; i++) {
-  if (fileContentLines[i].startsWith("#")) {
-    if (i > chunkStart) {
-      chunks.push(fileContentLines.slice(chunkStart, i).join("\n"));
-    }
-    chunkStart = i;
-  }
-}
+const chunks = parseChunks(fileContent);
 
 // Add the prompt to each chunk
 const chunksWithPrompt = chunks.map((chunk) => `${stylePrompt}\n\n${chunk}`);
