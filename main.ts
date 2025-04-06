@@ -18,7 +18,7 @@ Don't use em dashes, hyphens and semicolons.`;
 const model = "llama3.2";
 
 const filename =
-  "/Users/stefan.wauters/coding/personal/blog/content/private/Writing - Private Notes.md";
+    "/Users/stefan.wauters/coding/personal/blog/content/private/Writing - Private Notes.md";
 
 const fileContent = await Deno.readTextFile(filename);
 const chunks = parseChunks(fileContent);
@@ -27,25 +27,25 @@ const chunks = parseChunks(fileContent);
 const chunksWithPrompt = chunks.map((chunk) => `${stylePrompt}\n\n${chunk}`);
 
 chunksWithPrompt.forEach(async (chunk) => {
-  const response = await fetch("http://localhost:11434/api/generate", {
-    method: "POST",
-    body: JSON.stringify({
-      model,
-      prompt: chunk,
-      stream: false,
-    }),
-  });
+    const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        body: JSON.stringify({
+            model,
+            prompt: chunk,
+            stream: false,
+        }),
+    });
 
-  const content = await response.text();
-  const parsedContent = JSON.parse(content);
+    const content = await response.text();
+    const parsedContent = JSON.parse(content);
 
-  console.log("---CHUNK RESULT---");
-  console.log("---ORIGINAL TEXT---");
-  console.log(chunk);
+    console.log("---CHUNK RESULT---");
+    console.log("---ORIGINAL TEXT---");
+    console.log(chunk);
 
-  console.log("---RESPONSE---");
-  console.log(parsedContent.response);
-  console.log("---CHUNK RESULT END---");
+    console.log("---RESPONSE---");
+    console.log(parsedContent.response);
+    console.log("---CHUNK RESULT END---");
 });
 
 console.log(fileContent);
