@@ -21,7 +21,7 @@ This is some more content.`;
     ]);
 });
 
-Deno.test(function parseRootReturnsRootNode() {
+Deno.test(function parseNestedChunksReturnsNestedChunks() {
     const content = `# Title 1
 ## Subtitle 1
 This is some content.
@@ -93,6 +93,6 @@ This is some more content.`;
 
     assertEquals(
         result,
-        "## Subtitle 1\nThis is some content.\n## Subtitle 2\nThis is some more content.",
+        "# Title 1\n## Subtitle 1\nThis is some content.\n## Subtitle 2\nThis is some more content.",
     );
 });

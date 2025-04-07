@@ -63,6 +63,9 @@ export function parseRoot(content: string): Node {
     return root;
 }
 
+/**
+ * Remove the content before the first Markdown H1 header
+ */
 export function stripPreContent(content: string): string {
     const lines = content.split("\n");
 
@@ -70,7 +73,7 @@ export function stripPreContent(content: string): string {
 
     for (let i = 0; i < lines.length; i++) {
         if (lines[i].startsWith("# ")) {
-            result = lines.slice(i + 1).join("\n");
+            result = lines.slice(i).join("\n");
         }
     }
 
