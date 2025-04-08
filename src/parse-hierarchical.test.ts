@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert/equals";
-import { parseRoot } from "./parse-hierarchical.ts";
+import { createContentList, parseRoot } from "./parse-hierarchical.ts";
 
 Deno.test(function parseRootParsesTheFullHierarchy() {
     const content = `pre-content
@@ -47,4 +47,12 @@ Content 2.1`,
     );
     assertEquals(node2.children.length, 1);
     assertEquals(node2.depth, 1);
+
+    const contentList = createContentList(root);
+
+    console.log(`contentList: ${JSON.stringify(contentList, null, 2)}`);
+
+    assertEquals(contentList.length, 7);
+    assertEquals(contentList[contentList.length - 1], content);
+    assertEquals(contentList[0], "### Title 1.1.1\nContent 1.1.1");
 });

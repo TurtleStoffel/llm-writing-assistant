@@ -77,3 +77,18 @@ export function parseNestedChunks(content: string, depth: number): Node[] {
         };
     });
 }
+
+/**
+ * Put the content of the hierarchical structure into a list. The first elements are the smallest root-level elements. The last element is the root element.
+ */
+export function createContentList(node: Node): string[] {
+    if (node.children.length === 0) {
+        return [node.content];
+    }
+
+    const childContent = node.children.flatMap((child) => {
+        return createContentList(child);
+    });
+
+    return [...childContent, node.content];
+}
