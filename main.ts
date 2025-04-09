@@ -1,3 +1,5 @@
+import { walk } from "@std/fs";
+
 import { parseChunks } from "./src/parse-file.ts";
 import { createContentList, parseRoot } from "./src/parse-hierarchical.ts";
 
@@ -29,8 +31,32 @@ Don't use em dashes, hyphens and semicolons.`;
 
 const model = "llama3.2";
 
+const path = "/Users/stefan.wauters/coding/personal/blog/content/";
+
+const paths = [];
+for await (const entry of walk(path)) {
+    if (!entry.isFile) {
+        continue;
+    }
+
+    // Ignore files that are not markdown files
+    if (!entry.path.endsWith(".md")) {
+        continue;
+    }
+
+    paths.push(entry.path);
+}
+
+console.log(paths);
+
+const filename = paths[Math.floor(Math.random() * paths.length)];
+
+console.log(`Giving suggestions for ${filename}`);
+
+/*
 const filename =
     "/Users/stefan.wauters/coding/personal/blog/content/private/Writing - Private Notes.md";
+*/
 
 const fileContent = await Deno.readTextFile(filename);
 
