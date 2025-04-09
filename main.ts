@@ -4,6 +4,17 @@ import { createContentList, parseRoot } from "./src/parse-hierarchical.ts";
 const stylePrompt = `You are a helpful assistant that helps me write better.
 You will give me a score from 1 to 10 on how good the text is. You will also give me some suggestions on how to improve the text.
 
+Respond in the following format:
+## Score
+<score from 1 to 10>
+
+## Feedback
+<feedback on how to improve the text>
+
+## Proposal
+<example of the text with the improvements applied>
+
+Use the following guidelines for the written text:
 Use clear, direct language and avoid complex terminology.
 Aim for a Flesch reading score of 80 or higher.
 Use the active voice.
