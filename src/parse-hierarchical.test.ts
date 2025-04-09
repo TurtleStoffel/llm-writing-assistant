@@ -47,10 +47,25 @@ Content 2.1`,
     );
     assertEquals(node2.children.length, 1);
     assertEquals(node2.depth, 1);
+});
 
+Deno.test(function createContentListReturnsFlatListFromHierarchy() {
+    const content = `pre-content
+# Title 1
+Content 1
+## Title 1.1
+Content 1.1
+### Title 1.1.1
+Content 1.1.1
+## Title 1.2
+Content 1.2
+# Title 2
+Content 2
+## Title 2.1
+Content 2.1`;
+
+    const root = parseRoot(content);
     const contentList = createContentList(root);
-
-    console.log(`contentList: ${JSON.stringify(contentList, null, 2)}`);
 
     assertEquals(contentList.length, 7);
     assertEquals(contentList[contentList.length - 1], content);
