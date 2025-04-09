@@ -7,8 +7,9 @@ export interface Node {
 }
 
 export function parseRoot(content: string): Node {
-    const strippedContent = stripPreContent(content, "# ");
-    const children = parseNestedChunks(strippedContent, 1);
+    const { strippedContent, depth } = stripPreContent(content);
+
+    const children = parseNestedChunks(strippedContent, depth);
 
     return {
         content: content,
@@ -18,9 +19,38 @@ export function parseRoot(content: string): Node {
 }
 
 /**
- * Remove the content before the first Markdown H1 header
+ * Remove the content before the first H1 Header (if present) or before the first H2 Header.
+ *
+ * Content is required to contain at least one H1 or H2 header.
  */
-export function stripPreContent(content: string, headerPrefix: string): string {
+export function stripPreContent(content: string): {
+    strippedContent: string;
+    depth: number;
+} {
+    const H1_PREFIX = "# ";
+    const H2_PREFIX = "## ";
+    const lines = content.split("\n");
+    const containsH1 = lines.some((line) => line.startsWith(H1_PREFIX));
+    const containsH2 = lines.some((line) => line.startsWith(H2_PREFIX));
+
+    assert(
+        containsH1 || containsH2,
+        "Content needs to at least contain an H1 or H2 header",
+    );
+
+    const prefix = containsH1 ? H1_PREFIX : H2_PREFIX;
+    const depth = containsH1 ? 1 : 2;
+
+    return {
+        strippedContent: stripToPrefix(content, prefix),
+        depth,
+    };
+}
+
+/**
+ * Remove the content before `headerPrefix`
+ */
+export function stripToPrefix(content: string, headerPrefix: string): string {
     const lines = content.split("\n");
 
     let result = "";
@@ -69,7 +99,7 @@ export function parseNestedChunks(content: string, depth: number): Node[] {
 
     return contentChunks.map((chunk) => {
         const childHeaderPrefix = "#".repeat(depth + 1) + " ";
-        const childContent = stripPreContent(chunk, childHeaderPrefix);
+        const childContent = stripToPrefix(chunk, childHeaderPrefix);
         return {
             content: chunk,
             depth: depth,
