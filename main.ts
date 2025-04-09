@@ -47,73 +47,46 @@ for await (const entry of walk(path)) {
     paths.push(entry.path);
 }
 
-console.log(paths);
+// Continuously select a random new file to create suggestions for
+while (true) {
+    const filename = paths[Math.floor(Math.random() * paths.length)];
 
-const filename = paths[Math.floor(Math.random() * paths.length)];
+    console.log(`---Generating suggestions for ${filename}---`);
 
-console.log(`Giving suggestions for ${filename}`);
+    const fileContent = await Deno.readTextFile(filename);
 
-/*
-const filename =
-    "/Users/stefan.wauters/coding/personal/blog/content/private/Writing - Private Notes.md";
-*/
+    const root = parseRoot(fileContent);
+    const chunks = createContentList(root);
 
-const fileContent = await Deno.readTextFile(filename);
+    // Add the prompt to each chunk
+    const chunksWithPrompt = chunks.map((chunk) =>
+        `${stylePrompt}\n\n${chunk}`
+    );
 
-const root = parseRoot(fileContent);
-const chunks = createContentList(root);
-// const chunks = parseChunks(fileContent);
+    for (let i = 0; i < chunksWithPrompt.length; i++) {
+        const chunk = chunksWithPrompt[i];
+        const response = await fetch("http://localhost:11434/api/generate", {
+            method: "POST",
+            body: JSON.stringify({
+                model,
+                prompt: chunk,
+                stream: false,
+            }),
+        });
 
-// Add the prompt to each chunk
-const chunksWithPrompt = chunks.map((chunk) => `${stylePrompt}\n\n${chunk}`);
+        const content = await response.text();
+        const parsedContent = JSON.parse(content);
 
-for (let i = 0; i < chunksWithPrompt.length; i++) {
-    const chunk = chunksWithPrompt[i];
-    const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        body: JSON.stringify({
-            model,
-            prompt: chunk,
-            stream: false,
-        }),
-    });
+        console.log("---CHUNK RESULT---");
+        console.log("---ORIGINAL TEXT---");
+        console.log(chunk);
 
-    const content = await response.text();
-    const parsedContent = JSON.parse(content);
+        console.log("---RESPONSE---");
+        console.log(parsedContent.response);
+        console.log("---CHUNK RESULT END---\n\n");
 
-    console.log("---CHUNK RESULT---");
-    console.log("---ORIGINAL TEXT---");
-    console.log(chunk);
+        alert("Press enter to continue to next chunk...");
+    }
 
-    console.log("---RESPONSE---");
-    console.log(parsedContent.response);
-    console.log("---CHUNK RESULT END---\n\n\n");
-
-    alert("Press enter to continue to next chunk...");
+    console.log(`---Moving on to next file---\n\n\n`);
 }
-
-/*
-chunksWithPrompt.forEach(async (chunk) => {
-    const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        body: JSON.stringify({
-            model,
-            prompt: chunk,
-            stream: false,
-        }),
-    });
-
-    const content = await response.text();
-    const parsedContent = JSON.parse(content);
-
-    console.log("---CHUNK RESULT---");
-    console.log("---ORIGINAL TEXT---");
-    console.log(chunk);
-
-    console.log("---RESPONSE---");
-    console.log(parsedContent.response);
-    console.log("---CHUNK RESULT END---");
-});
-*/
-
-console.log(fileContent);

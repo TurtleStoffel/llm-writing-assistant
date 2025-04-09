@@ -1,8 +1,11 @@
 import { assert } from "@std/assert/assert";
 
 export interface Node {
+    // Full content at this level of the node
     content: string;
+    // Children contained within the content of the node
     children: Node[];
+    // Level of header in the content of the node
     depth: number;
 }
 
