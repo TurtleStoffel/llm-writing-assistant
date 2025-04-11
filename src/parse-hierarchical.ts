@@ -10,6 +10,18 @@ export interface Node {
 }
 
 export function parseRoot(content: string): Node {
+    // Early return for content that doesn't contain any headers.
+    const containsHeaders = content.split("\n").some((line) =>
+        line.startsWith("#")
+    );
+    if (!containsHeaders) {
+        return {
+            content: content,
+            children: [],
+            depth: 0,
+        };
+    }
+
     const { strippedContent, depth } = stripPreContent(content);
 
     const children = parseNestedChunks(strippedContent, depth);

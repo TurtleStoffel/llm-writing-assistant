@@ -27,7 +27,8 @@ Avoid being salesy or overly enthusiastic and instead express calm confidence.
 Prefer full sentences over bullet points unless explicitly requested.
 Avoid overusing "I" or "we".
 Use singular form when writing about yourself.
-Don't use em dashes, hyphens and semicolons.`;
+Don't use em dashes, hyphens and semicolons.
+Maintain the Markdown links that are present in the document.`;
 
 const model = "llama3.2";
 
@@ -85,7 +86,12 @@ while (true) {
         console.log(parsedContent.response);
         console.log("---CHUNK RESULT END---\n\n");
 
-        alert("Press enter to continue to next chunk...");
+        const continueOrSkip = prompt(
+            "Continue to next chunk (Enter) or to next file (n):",
+        );
+        if (continueOrSkip === "n") {
+            break;
+        }
     }
 
     console.log(`---Moving on to next file---\n\n\n`);
