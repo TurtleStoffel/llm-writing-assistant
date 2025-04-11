@@ -1,6 +1,5 @@
 import { walk } from "@std/fs";
 
-import { parseChunks } from "./src/parse-file.ts";
 import { createContentList, parseRoot } from "./src/parse-hierarchical.ts";
 
 const stylePrompt = `You are a helpful assistant that helps me write better.
