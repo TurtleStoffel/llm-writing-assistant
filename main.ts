@@ -1,23 +1,10 @@
-import { walk } from "@std/fs";
-
 import { createContentList, parseRoot } from "./src/parse-hierarchical.ts";
 import { generateResponse, prependWithPrompt } from "./src/llm.ts";
+import { findMarkdownFilesInFolder } from "./src/file-system.ts";
 
-const path = "/Users/stefan.wauters/coding/personal/blog/content/";
+const CONTENT_FOLDER = "/Users/stefan.wauters/coding/personal/blog/content/";
 
-const paths = [];
-for await (const entry of walk(path)) {
-    if (!entry.isFile) {
-        continue;
-    }
-
-    // Ignore files that are not markdown files
-    if (!entry.path.endsWith(".md")) {
-        continue;
-    }
-
-    paths.push(entry.path);
-}
+const paths = await findMarkdownFilesInFolder(CONTENT_FOLDER);
 
 // Continuously select a random new file to create suggestions for
 while (true) {
