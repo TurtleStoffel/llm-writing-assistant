@@ -63,35 +63,51 @@ while (true) {
         `${stylePrompt}\n\n${chunk}`
     );
 
-    for (let i = 0; i < chunksWithPrompt.length; i++) {
-        const chunk = chunksWithPrompt[i];
-        const response = await fetch("http://localhost:11434/api/generate", {
-            method: "POST",
-            body: JSON.stringify({
-                model,
-                prompt: chunk,
-                stream: false,
-            }),
-        });
+    const randomChunkIndex = Math.floor(
+        Math.random() * chunksWithPrompt.length,
+    );
 
-        const content = await response.text();
-        const parsedContent = JSON.parse(content);
+    //for (let i = 0; i < chunksWithPrompt.length; i++) {
+    const chunkWithPrompt = chunksWithPrompt[randomChunkIndex];
+    const response = await fetch("http://localhost:11434/api/generate", {
+        method: "POST",
+        body: JSON.stringify({
+            model,
+            prompt: chunkWithPrompt,
+            stream: false,
+        }),
+    });
 
-        console.log("---CHUNK RESULT---");
-        console.log("---ORIGINAL TEXT---");
-        console.log(chunk);
+    const content = await response.text();
+    const parsedContent = JSON.parse(content);
 
-        console.log("---RESPONSE---");
-        console.log(parsedContent.response);
-        console.log("---CHUNK RESULT END---\n\n");
+    console.log("---CHUNK RESULT---");
+    console.log("---ORIGINAL TEXT---");
+    console.log(chunkWithPrompt);
 
+    console.log("---RESPONSE---");
+    console.log(parsedContent.response);
+    console.log("---CHUNK RESULT END---\n\n");
+
+    // replace the chunk in the original file with the new chunk
+    const chunk = chunks[randomChunkIndex];
+    const chunkWithSuggestion = `${chunk}
+
+<!--SUGGESTION
+${parsedContent.response}
+-->`;
+    const newFileContent = fileContent.replace(chunk, chunkWithSuggestion);
+    await Deno.writeTextFile(filename, newFileContent);
+
+    /*
         const continueOrSkip = prompt(
             "Continue to next chunk (Enter) or to next file (n):",
         );
         if (continueOrSkip === "n") {
             break;
         }
-    }
+        */
+    //}
 
     console.log(`---Moving on to next file---\n\n\n`);
 }
