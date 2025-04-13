@@ -1,6 +1,7 @@
 import { walk } from "@std/fs";
 
 import { createContentList, parseRoot } from "./src/parse-hierarchical.ts";
+import { generateResponse } from "./src/llm.ts";
 
 const stylePrompt = `You are a helpful assistant that helps me write better.
 You will give me a score from 1 to 10 on how good the text is. You will also give me some suggestions on how to improve the text.
@@ -28,8 +29,6 @@ Avoid overusing "I" or "we".
 Use singular form when writing about yourself.
 Don't use em dashes, hyphens and semicolons.
 Maintain the Markdown links that are present in the document.`;
-
-const model = "llama3.2";
 
 const path = "/Users/stefan.wauters/coding/personal/blog/content/";
 
@@ -69,35 +68,20 @@ while (true) {
 
     //for (let i = 0; i < chunksWithPrompt.length; i++) {
     const chunkWithPrompt = chunksWithPrompt[randomChunkIndex];
-    const response = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        body: JSON.stringify({
-            model,
-            prompt: chunkWithPrompt,
-            stream: false,
-        }),
-    });
+    //const result = generateResponse(chunkWithPrompt);
+    await generateResponse(chunkWithPrompt);
 
-    const content = await response.text();
-    const parsedContent = JSON.parse(content);
-
-    console.log("---CHUNK RESULT---");
-    console.log("---ORIGINAL TEXT---");
-    console.log(chunkWithPrompt);
-
-    console.log("---RESPONSE---");
-    console.log(parsedContent.response);
-    console.log("---CHUNK RESULT END---\n\n");
-
+    /*
     // replace the chunk in the original file with the new chunk
     const chunk = chunks[randomChunkIndex];
     const chunkWithSuggestion = `${chunk}
 
 <!--SUGGESTION
-${parsedContent.response}
+${result}
 -->`;
     const newFileContent = fileContent.replace(chunk, chunkWithSuggestion);
     await Deno.writeTextFile(filename, newFileContent);
+    */
 
     /*
         const continueOrSkip = prompt(
